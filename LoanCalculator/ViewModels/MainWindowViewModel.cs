@@ -29,12 +29,12 @@ namespace LoanCalculator.ViewModels
         [RelayCommand]
         public void CalculateInstallments()
         {
-            //Valditation will be managed here as well.
-            var SubmissionResult = FormProcessor.Process(
+            // TODO: Integrate new validation approach here.
+            var submissionResult = LoanFormProcessor.Process(
                 new RawLoanFormInput(LoanAmount, AnnualInterestRate, MonthDuration));
 
-            MonthlyPayment = SubmissionResult.MonthlyPayment?.ToString()?? "";
-            FeedbackMessage = SubmissionResult.FeedbackMessage;
+            MonthlyPayment = submissionResult.MonthlyPayment?.ToString() ?? "";
+            FeedbackMessage = submissionResult.FeedbackMessage;
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿
 
 using LoanCalculator.Models;
-using LoanCalculator.Services.ParsingServices;
-using System;
-using System.Text.RegularExpressions;
+using System.Globalization;
 
 
 
@@ -28,23 +26,17 @@ namespace LoanCalculator.Services
 
     //---
 
-    public static class FormProcessor
+    public static class LoanFormProcessor
     {
-
         public static SubmissionResult Process(RawLoanFormInput input)
         {
-             
             // 1a. Try parsing raw strings into typed values
-            var parseResult = TryParse(input);
+            var (parsed, error) = TryParse(input);
 
             // 1b. Parsing went wrong. We cannot continue. Abort and return
             // helpful messages to whomever asks for it.
-            if (parseResult is ParseFailure<ParsedLoanInput> pf)
-                return new SubmissionResult(false, pf.ErrorMessage, null);
-
-            // 1c.  Parsing into their domain-specific types went well.
-            // Doesn't mean domain rules are valid. Only the types are.
-            var parsed = ((ParseSuccess<ParsedLoanInput>)parseResult).Value;
+            if (parsed is null)
+                return new SubmissionResult(false, error ?? "Invalid input.", null);
 
             // 2. Validate domain rules
             var validation = Validate(parsed);
@@ -59,32 +51,23 @@ namespace LoanCalculator.Services
         //---
 
         //Parse the raw input from the Form/Window (there's only one).
-        private static ParseResult<ParsedLoanInput> TryParse(RawLoanFormInput input)
+        private static (ParsedLoanInput? Parsed, string? Error) TryParse(RawLoanFormInput input)
         {
-            /*
-             ParsedLoandInput record isn't used in ParseFailure<ParsedLoanInput>. Just here for compatibility with the
-             ParseResult<ParsedLoanInput> pipeline - which is its base class and its return type as you can see.
-            */
+            // TODO: Replace simple parsing with new validation logic.
 
-            var amountResult = InputParser.ParseDecimal(input.Principal, "Loan amount");          
-            if (amountResult is ParseFailure<decimal> af)
-                return new ParseFailure<ParsedLoanInput>(af.ErrorMessage);
+            if (string.IsNullOrWhiteSpace(input.Principal) ||
+                !decimal.TryParse(input.Principal, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount))
+                return (null, "Loan amount is not a valid number.");
 
-            var rateResult = InputParser.ParseDouble(input.AnnualRate, "Interest rate");
-            if (rateResult is ParseFailure<double> rf)
-                return new ParseFailure<ParsedLoanInput>(rf.ErrorMessage);
+            if (string.IsNullOrWhiteSpace(input.AnnualRate) ||
+                !double.TryParse(input.AnnualRate, NumberStyles.Number, CultureInfo.InvariantCulture, out var rate))
+                return (null, "Interest rate is not a valid number.");
 
-            var durationResult = InputParser.ParseInt(input.Months, "Duration (months)");
-            if (durationResult is ParseFailure<int> df)
-                return new ParseFailure<ParsedLoanInput>(df.ErrorMessage);
+            if (string.IsNullOrWhiteSpace(input.Months) ||
+                !int.TryParse(input.Months, NumberStyles.Integer, CultureInfo.InvariantCulture, out var months))
+                return (null, "Duration (months) is not a valid integer.");
 
-            // parsing went well
-            if (amountResult is ParseSuccess<decimal> a &&
-                rateResult is ParseSuccess<double> r &&
-                durationResult is ParseSuccess<int> d)
-                return new ParseSuccess<ParsedLoanInput>(new ParsedLoanInput(a.Value, r.Value, d.Value));
-
-            return new ParseFailure<ParsedLoanInput>("Unknown Error in TryParseRawInput()");
+            return (new ParsedLoanInput(amount, rate, months), null);
         }
 
         private static SubmissionResult Validate(ParsedLoanInput parsed)
