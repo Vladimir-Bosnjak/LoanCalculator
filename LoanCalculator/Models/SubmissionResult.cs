@@ -1,4 +1,4 @@
-﻿// test push
+﻿// SMOKE TEST
 
 namespace LoanCalculator.Models
 {
