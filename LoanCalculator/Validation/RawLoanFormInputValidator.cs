@@ -4,9 +4,9 @@ using LoanCalculator.Models;
 
 namespace LoanCalculator.Validation
 {
-    internal sealed class LoanFormInputValidators : AbstractValidator<RawLoanFormInput>
+    internal sealed class RawLoanFormInputValidator : AbstractValidator<RawLoanFormInput>
     {
-        public LoanFormInputValidators()
+        public RawLoanFormInputValidator()
         {
             /*
                 ^      — start of the string
@@ -38,6 +38,23 @@ namespace LoanCalculator.Validation
                 .Matches("^[0-9]+([.,][0-9]{1,2})?$")
                 .WithMessage("Annual Rate must be a number with up to two decimals, using '.' or ','.");
 
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------
+
+    internal sealed class ParsedLoanFormDomainValidator : AbstractValidator<ParsedLoanInput>
+    {
+        public ParsedLoanFormDomainValidator()
+        {
+            RuleFor(x => x.Principal)
+                .LessThanOrEqualTo(20000).WithMessage("The principal cannot exceed 20000. Please lower the amount.");
+
+            RuleFor(x => x.AnnualRate)
+                .InclusiveBetween(7.50, 10.0).WithMessage("Annual rate must be from 7.50% up to a max of 10.00%");
+
+            RuleFor(x => x.Months)
+                .InclusiveBetween(1, 84).WithMessage("The monthly term must be a range from 1 month up to a max of 84 month");
         }
     }
 }
