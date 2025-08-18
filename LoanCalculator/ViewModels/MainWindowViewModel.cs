@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LoanCalculator.Models;
 using LoanCalculator.Services;
-
 
 namespace LoanCalculator.ViewModels
 {
