@@ -34,7 +34,7 @@ namespace LoanCalculator.Models
 
 
     /// <summary>
-    /// Holds the loan parameters once all three fields have been parsed successfully.  
+    /// Holds the loan parameters if all three fields have been parsed successfully.  
     /// </summary>
     /// <param name="Principal"></param>
     /// <param name="AnnualRate"></param>

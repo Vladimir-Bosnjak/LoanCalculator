@@ -4,8 +4,20 @@ using LoanCalculator.Models;
 
 namespace LoanCalculator.Validation
 {
+    /// <summary>
+    /// 1) Implemented both validation classes in one file due to their small size.
+    /// 2) CascadeMode = CascadeMode.Continue by default these days and is intended here.
+    /// </summary>
+    
     internal sealed class RawLoanFormInputValidator : AbstractValidator<RawLoanFormInput>
     {
+        /// <summary>
+        /// RawLoanFormInputValidator class takes care of pre-parsing validation. We treat
+        /// the input from the Loan Form as hostile. We only check for form, not for the
+        /// business rules associated with the input. The point of this is to ensure
+        /// that "TryParse()" succeeds.
+        /// </summary>
+        
         public RawLoanFormInputValidator()
         {
             /*
@@ -42,6 +54,11 @@ namespace LoanCalculator.Validation
     }
 
     // -------------------------------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Post-parsing gives us  the actual data, so ParsedLoanFormDomainValidator checks for
+    /// business rules. If we end up here, then parsing of the raw data must have succeeded.
+    /// </summary>
 
     internal sealed class ParsedLoanFormDomainValidator : AbstractValidator<ParsedLoanInput>
     {

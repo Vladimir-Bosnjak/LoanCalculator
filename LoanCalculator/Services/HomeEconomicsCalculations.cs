@@ -13,7 +13,7 @@ namespace LoanCalculator.Services
                 : (decimal)(monthlyRate * (double)parsed.Principal
                             / (1 - Math.Pow(1 + monthlyRate, -parsed.Months)));
 
-            return new SubmissionResult(true, "Calculation successful.", payment);
+            return new SubmissionResult(true, "Here's your calculated monthly payment.", payment);
         }
     }
 }
