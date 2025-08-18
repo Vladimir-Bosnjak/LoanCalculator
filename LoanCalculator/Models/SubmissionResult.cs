@@ -21,4 +21,23 @@ namespace LoanCalculator.Models
             MonthlyPayment = monthlyPayment;
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Keeping input params tidy. Value object of the raw, unparsed input data.
+    /// </summary>
+    /// <param name="Principal"></param>
+    /// <param name="AnnualRate"></param>
+    /// <param name="Months"></param>
+    public record RawLoanFormInput(string Principal, string AnnualRate, string Months);
+
+
+    /// <summary>
+    /// Holds the loan parameters once all three fields have been parsed successfully.  
+    /// </summary>
+    /// <param name="Principal"></param>
+    /// <param name="AnnualRate"></param>
+    /// <param name="Months"></param>
+    public record ParsedLoanInput(decimal Principal, double AnnualRate, int Months);
 }
